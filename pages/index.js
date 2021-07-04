@@ -1,88 +1,83 @@
-import React from 'react'
-import Head from 'next/head'
-import Nav from '../components/nav'
+import React from "react"
+import styled, { ServerStyleSheet, StyleSheetManager } from "styled-components"
+import { renderToStaticMarkup, renderToString } from "react-dom/server"
+import juice from "juice"
 
-const Home = () => (
-  <div>
-    <Head>
-      <title>Home</title>
-      <link rel="icon" href="/favicon.ico" />
-    </Head>
+import Head from "next/head"
 
-    <Nav />
+const Wrap = styled.div`
+  margin: auto;
+  max-width: 600px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+`
 
-    <div className="hero">
-      <h1 className="title">Welcome to Next.js!</h1>
-      <p className="description">
-        To get started, edit <code>pages/index.js</code> and save to reload.
-      </p>
+const Title = styled.h1`
+  font-size: 30px;
+  font-weight: 700;
+  color: blue;
+`
 
-      <div className="row">
-        <a href="https://nextjs.org/docs" className="card">
-          <h3>Documentation &rarr;</h3>
-          <p>Learn more about Next.js in the documentation.</p>
-        </a>
-        <a href="https://nextjs.org/learn" className="card">
-          <h3>Next.js Learn &rarr;</h3>
-          <p>Learn about Next.js by following an interactive tutorial!</p>
-        </a>
-        <a
-          href="https://github.com/zeit/next.js/tree/master/examples"
-          className="card"
-        >
-          <h3>Examples &rarr;</h3>
-          <p>Find other example boilerplates on the Next.js GitHub.</p>
-        </a>
-      </div>
+const Text = styled.p`
+  font-size: 20px;
+`
+
+const Image = styled.img`
+  width: 100%;
+  border-radius: 12px;
+`
+
+const Button = styled.a`
+  padding: 5px 20px;
+  background-color: coral;
+  color: white;
+  font-size: 20px;
+  border-radius: 12px;
+  border: none;
+`
+
+const Home = () => {
+  const printHtml = () => {
+    const HtmlTemplate = ({ body, styles, title }) => `
+      <!DOCTYPE html>
+        <html>
+          <head>
+            <title>${title}</title>
+            ${styles}
+          </head>
+          <body style="margin:0">
+            <div id="app">${body}</div>
+          </body>
+      </html>
+      `
+    const sheet = new ServerStyleSheet()
+    const body = renderToStaticMarkup(sheet.collectStyles(<Home />))
+    const styles = sheet.getStyleTags()
+    const html = HtmlTemplate({ body, styles, title: "테스트" })
+    console.log(html)
+    console.log(juice(html))
+  }
+
+  return (
+    <div>
+      <Head>
+        <title>Home</title>
+        <link rel="icon" href="/favicon.ico" />
+      </Head>
+      <Wrap>
+        <Title>이메일 제목</Title>
+        <Image src="https://cdn.pixabay.com/photo/2021/05/23/21/57/mountains-6277391_1280.jpg" />
+        <Text>
+          renderToNodeStream과 비슷하지만 data-reactroot와 같이 React에서
+          내부적으로 사용하는 추가적인 DOM 어트리뷰트를 만들지 않습니다. 여분의
+          어트리뷰트를 제거함으로써 약간의 바이트를 절약할 수 있으므로 React를
+          간단한 정적 페이지 생성기로 사용하고 싶은 경우에 유용합니다.
+        </Text>
+        <Button onClick={printHtml}>버튼</Button>
+      </Wrap>
     </div>
-
-    <style jsx>{`
-      .hero {
-        width: 100%;
-        color: #333;
-      }
-      .title {
-        margin: 0;
-        width: 100%;
-        padding-top: 80px;
-        line-height: 1.15;
-        font-size: 48px;
-      }
-      .title,
-      .description {
-        text-align: center;
-      }
-      .row {
-        max-width: 880px;
-        margin: 80px auto 40px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-around;
-      }
-      .card {
-        padding: 18px 18px 24px;
-        width: 220px;
-        text-align: left;
-        text-decoration: none;
-        color: #434343;
-        border: 1px solid #9b9b9b;
-      }
-      .card:hover {
-        border-color: #067df7;
-      }
-      .card h3 {
-        margin: 0;
-        color: #067df7;
-        font-size: 18px;
-      }
-      .card p {
-        margin: 0;
-        padding: 12px 0 0;
-        font-size: 13px;
-        color: #333;
-      }
-    `}</style>
-  </div>
-)
+  )
+}
 
 export default Home
